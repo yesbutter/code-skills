@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/code.iml" filepath="$PROJECT_DIR$/code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/单例模式/单例模式.iml" filepath="$PROJECT_DIR$/单例模式/单例模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/工厂模式/工厂模式.iml" filepath="$PROJECT_DIR$/工厂模式/工厂模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/策略模式/策略模式.iml" filepath="$PROJECT_DIR$/策略模式/策略模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/装饰模式/装饰模式.iml" filepath="$PROJECT_DIR$/装饰模式/装饰模式.iml" />
