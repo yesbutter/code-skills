@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/命令模式/命令模式.iml" filepath="$PROJECT_DIR$/命令模式/命令模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/工厂模式/工厂模式.iml" filepath="$PROJECT_DIR$/工厂模式/工厂模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/模板模式/模板模式.iml" filepath="$PROJECT_DIR$/模板模式/模板模式.iml" />
+      <module fileurl="file://$PROJECT_DIR$/状态模式/状态模式.iml" filepath="$PROJECT_DIR$/状态模式/状态模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/策略模式/策略模式.iml" filepath="$PROJECT_DIR$/策略模式/策略模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/组合模式/组合模式.iml" filepath="$PROJECT_DIR$/组合模式/组合模式.iml" />
       <module fileurl="file://$PROJECT_DIR$/装饰模式/装饰模式.iml" filepath="$PROJECT_DIR$/装饰模式/装饰模式.iml" />
