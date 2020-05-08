@@ -1,7 +1,5 @@
 package Demo;
 
-import sun.rmi.registry.RegistryImpl;
-
 import java.net.MalformedURLException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
