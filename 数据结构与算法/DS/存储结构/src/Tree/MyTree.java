@@ -10,41 +10,41 @@ public class MyTree<T> {
 //    TreeMap;
 //    HashMap
 
-    MyTreeNode<T> root;
+    TreeNode<T> root;
 
     public MyTree() {
-        this.root = new MyTreeNode<>();
+        this.root = new TreeNode<>();
     }
 
     //递归先序
-    public static <T> void prevOrder(MyTreeNode<T> myTreeNode) {
+    public static <T> void prevOrder(TreeNode<T> treeNode) {
         //数据访问
-        if (myTreeNode == null)
+        if (treeNode == null)
             return;
-        System.out.print(myTreeNode.data + " ");
-        prevOrder(myTreeNode.lChild);
-        prevOrder(myTreeNode.rChild);
+        System.out.print(treeNode.data + " ");
+        prevOrder(treeNode.lChild);
+        prevOrder(treeNode.rChild);
     }
 
     //非递归先序 模拟堆栈存储的一个过程
-    public static <T> void prev(MyTreeNode<T> root) {
-        MyTreeNode<T> myTreeNode = root;
+    public static <T> void prev(TreeNode<T> root) {
+        TreeNode<T> treeNode = root;
         //TODO 自定义的stack
-        Stack<MyTreeNode<T>> stack = new Stack<>();
+        Stack<TreeNode<T>> stack = new Stack<>();
         stack.push(root);
-        while (myTreeNode != null || !stack.empty()) {
-            while (myTreeNode != null) {
+        while (treeNode != null || !stack.empty()) {
+            while (treeNode != null) {
                 //先序访问
-                System.out.print(myTreeNode.data + " ");
-                stack.push(myTreeNode.lChild);
-                myTreeNode = myTreeNode.lChild;
+                System.out.print(treeNode.data + " ");
+                stack.push(treeNode.lChild);
+                treeNode = treeNode.lChild;
             }
             if (!stack.empty()) {
-                myTreeNode = stack.pop();
+                treeNode = stack.pop();
                 //转到右子树
-                if (myTreeNode != null) {
-                    stack.push(myTreeNode.rChild);
-                    myTreeNode = myTreeNode.rChild;
+                if (treeNode != null) {
+                    stack.push(treeNode.rChild);
+                    treeNode = treeNode.rChild;
                 }
             }
         }
@@ -52,34 +52,34 @@ public class MyTree<T> {
 
 
     //递归先序
-    public static <T> void midOrder(MyTreeNode<T> myTreeNode) {
+    public static <T> void midOrder(TreeNode<T> treeNode) {
         //数据访问
-        if (myTreeNode == null)
+        if (treeNode == null)
             return;
-        midOrder(myTreeNode.lChild);
-        System.out.print(myTreeNode.data + " ");
-        midOrder(myTreeNode.rChild);
+        midOrder(treeNode.lChild);
+        System.out.print(treeNode.data + " ");
+        midOrder(treeNode.rChild);
     }
 
 
     //非递归中序 模拟堆栈存储的一个过程
-    public static <T> void mid(MyTreeNode<T> root) {
-        MyTreeNode<T> myTreeNode = root;
+    public static <T> void mid(TreeNode<T> root) {
+        TreeNode<T> treeNode = root;
         //TODO 自定义的stack
-        Stack<MyTreeNode<T>> stack = new Stack<>();
+        Stack<TreeNode<T>> stack = new Stack<>();
         stack.push(root);
-        while (myTreeNode != null || !stack.empty()) {
-            while (myTreeNode != null) {
-                stack.push(myTreeNode.lChild);
-                myTreeNode = myTreeNode.lChild;
+        while (treeNode != null || !stack.empty()) {
+            while (treeNode != null) {
+                stack.push(treeNode.lChild);
+                treeNode = treeNode.lChild;
             }
             if (!stack.empty()) {
-                myTreeNode = stack.pop();
+                treeNode = stack.pop();
                 //转到右子树
-                if (myTreeNode != null) {
-                    System.out.print(myTreeNode.data + " ");
-                    stack.push(myTreeNode.rChild);
-                    myTreeNode = myTreeNode.rChild;
+                if (treeNode != null) {
+                    System.out.print(treeNode.data + " ");
+                    stack.push(treeNode.rChild);
+                    treeNode = treeNode.rChild;
                 }
             }
         }
@@ -88,19 +88,19 @@ public class MyTree<T> {
         MyTree<Integer> myTree = new MyTree<>();
         {
 
-            MyTreeNode<Integer> myTreeNode2 = new MyTreeNode<Integer>(2);
-            MyTreeNode<Integer> myTreeNode3 = new MyTreeNode<Integer>(3);
-            MyTreeNode<Integer> myTreeNode4 = new MyTreeNode<Integer>(4);
-            MyTreeNode<Integer> myTreeNode5 = new MyTreeNode<Integer>(5);
-            MyTreeNode<Integer> myTreeNode6 = new MyTreeNode<Integer>(6);
+            TreeNode<Integer> treeNode2 = new TreeNode<Integer>(2);
+            TreeNode<Integer> treeNode3 = new TreeNode<Integer>(3);
+            TreeNode<Integer> treeNode4 = new TreeNode<Integer>(4);
+            TreeNode<Integer> treeNode5 = new TreeNode<Integer>(5);
+            TreeNode<Integer> treeNode6 = new TreeNode<Integer>(6);
             myTree.root.data = 1;
-            myTree.root.lChild = myTreeNode2;
-            myTree.root.rChild = myTreeNode5;
+            myTree.root.lChild = treeNode2;
+            myTree.root.rChild = treeNode5;
 
-            myTreeNode2.lChild = myTreeNode4;
-            myTreeNode2.rChild = myTreeNode3;
+            treeNode2.lChild = treeNode4;
+            treeNode2.rChild = treeNode3;
 
-            myTreeNode5.rChild = myTreeNode6;
+            treeNode5.rChild = treeNode6;
 
         }
 

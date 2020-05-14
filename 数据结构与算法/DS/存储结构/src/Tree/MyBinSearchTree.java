@@ -6,17 +6,43 @@ package Tree;
  */
 public class MyBinSearchTree<E extends Comparable<E>> {
 
-    private MyTreeNode<E> root;
+    private TreeNode<E> root;
+    private int size = 0;
+
+    public MyBinSearchTree() {
+        root = null;
+    }
+
+    public int getHeight() {
+        return getHeight(root);
+    }
+
+    public TreeNode<E> getRoot() {
+        return root;
+    }
+
+    public int getHeight(TreeNode<E> node) {
+        if (node == null)
+            return 0;
+        int left = getHeight(node.lChild);
+        int right = getHeight(node.rChild);
+        return Math.max(left, right) + 1;
+    }
 
     public MyBinSearchTree(E value) {
-        root = new MyTreeNode<>(value);
+        root = new TreeNode<>(value);
     }
 
-    public void addNode(E data) {
-        addNode(root, data);
+    public void add(E data) {
+        if (root == null) {
+            root = new TreeNode<>(data);
+            size++;
+            return;
+        }
+        add(root, data);
     }
 
-    public static <E extends Comparable<E>> boolean isBST(MyTreeNode<E> root) {
+    public static <E extends Comparable<E>> boolean isBST(TreeNode<E> root) {
         if (root != null) {
             if (root.lChild != null && root.lChild.data.compareTo(root.data) > 0)
                 return false;
@@ -28,102 +54,118 @@ public class MyBinSearchTree<E extends Comparable<E>> {
         return true;
     }
 
+
+    public TreeNode<E> search(E data) {
+        return search(root, data);
+    }
+
+    private TreeNode<E> search(TreeNode<E> node, E data) {
+        while (node != null) {
+            if (data.compareTo(node.data) > 0) {
+                node = node.rChild;
+            } else if (data.compareTo(node.data) < 0) {
+                node = node.lChild;
+            } else {
+                return node;
+            }
+        }
+        return null;
+    }
+
     //递归实现
     @Deprecated
-    public void addNodeOrder(MyTreeNode<E> node, E data) {
-        MyTreeNode<E> next;
+    public void addNodeOrder(TreeNode<E> node, E data) {
+        TreeNode<E> next;
         if (data.compareTo(node.data) >= 0) {
             next = node.rChild;
             if (next == null) {
-                node.rChild = new MyTreeNode<E>(data);
+                node.rChild = new TreeNode<E>(data);
                 return;
             }
         } else {
             next = node.lChild;
             if (next == null) {
-                node.lChild = new MyTreeNode<E>(data);
+                node.lChild = new TreeNode<E>(data);
                 return;
             }
         }
-        addNode(next, data);
+        add(next, data);
     }
 
-    public void addNode(MyTreeNode<E> node, E data) {
-        MyTreeNode<E> myTreeNode = node;
-        while (true) {
-            if (data.compareTo(myTreeNode.data) >= 0) {
-                if (myTreeNode.rChild == null) {
-                    myTreeNode.rChild = new MyTreeNode<>(data);
-                    return;
-                }
-                myTreeNode = myTreeNode.rChild;
+    public void add(TreeNode<E> node, E data) {
+        TreeNode<E> treeNode = node;
+        TreeNode<E> position = null;
+        while (treeNode != null) {
+            position = treeNode;
+            if (data.compareTo(treeNode.data) > 0) {
+                treeNode = treeNode.rChild;
             } else {
-                if (myTreeNode.lChild == null) {
-                    myTreeNode.lChild = new MyTreeNode<>(data);
-                    return;
-                }
-                myTreeNode = myTreeNode.lChild;
+                treeNode = treeNode.lChild;
+            }
+        }
+        TreeNode<E> newNode =new TreeNode<>(data);
+        newNode.parent = position;
+        if(position == null)
+            root = newNode;
+        else {
+            if(data.compareTo(position.data) > 0){
+                position.rChild = newNode;
+            }else {
+                position.lChild = newNode;
             }
         }
     }
 
-    public void updateNodeValue(MyTreeNode<E> prev, MyTreeNode<E> node, MyTreeNode<E> value) {
-        if (prev.lChild != null && prev.lChild == node)
-            prev.lChild = value;
+    public void updateNodeValue(TreeNode<E> node, TreeNode<E> value) {
+        if (node.parent.lChild != null && node.parent.lChild == node)
+            node.parent.lChild = value;
         else
-            prev.rChild = value;
+            node.parent.rChild = value;
     }
 
-    public void removeNode(MyTreeNode<E> prev, MyTreeNode<E> node) {
 
-        if (node.lChild == null && node.rChild == null) {
-            updateNodeValue(prev, node, null);
-        } else if (node.lChild == null) {
-            updateNodeValue(prev, node, node.rChild);
-        } else if (node.rChild == null) {
-            updateNodeValue(prev, node, node.lChild);
+    public TreeNode<E> remove(TreeNode<E> node) {
+
+        if (node.lChild != null && node.rChild != null) {
+            //左右节点都在，找右子树中最小的元素交换值。
+            TreeNode<E> minTreeNode = node.rChild;
+            while (minTreeNode.lChild != null) {
+                minTreeNode = minTreeNode.lChild;
+            }
+            E tmp = minTreeNode.data;
+            minTreeNode.data = node.data;
+            node.data = tmp;
+            node = minTreeNode;
+        }
+
+        TreeNode<E> child;
+        if (node.lChild != null)
+            child = node.lChild;
+        else
+            child = node.rChild;
+        if (child != null) {
+            //节点交换
+            child.parent = node.parent;
+        }
+        //如果当前节点没有父节点，表示是跟结点
+        if (node.parent == null) {
+            root = child;
+        } else if (node == node.parent.lChild) {
+            //当前结点是父节点的左结点
+            node.parent.lChild = child;
         } else {
-            //查找右子树的最小的元素的位置，交换
-            //如果该元素有右子树，需要把右子树移到前序结点的左子树
-            MyTreeNode<E> myTreeNode = node.rChild;
-            MyTreeNode<E> myTreeNodePrev = node;
-            while (myTreeNode.lChild != null) {
-                myTreeNodePrev = myTreeNode;
-                myTreeNode = myTreeNode.lChild;
-            }
-            if (myTreeNode.rChild != null)
-                myTreeNodePrev.lChild = myTreeNode.rChild;
-            if (myTreeNode == node.rChild) {
-                node.rChild = null;
-                myTreeNodePrev.rChild = null;
-            } else {
-                myTreeNodePrev.lChild = null;
-            }
-            updateNodeValue(prev, node, myTreeNode);
-            myTreeNode.lChild = node.lChild;
-            myTreeNode.rChild = node.rChild;
+            node.parent.rChild = child;
         }
-        // Help GC
-        node = null;
+        return node;
     }
 
-    public boolean removeNode(E data) {
+    public TreeNode<E> remove(E data) {
         //首先要查找到这个数字,只会删除出现的第一次
-        MyTreeNode<E> myTreeNode = root;
-        MyTreeNode<E> prev = null;
-        while (myTreeNode != null) {
-            if (data.compareTo(myTreeNode.data) < 0) {
-                prev = myTreeNode;
-                myTreeNode = myTreeNode.lChild;
-            } else if (data.compareTo(myTreeNode.data) > 0) {
-                prev = myTreeNode;
-                myTreeNode = myTreeNode.rChild;
-            } else {
-                removeNode(prev, myTreeNode);
-                return true;
-            }
-        }
-        return false;
+        TreeNode<E> treeNode = search(data);
+        if (treeNode == null)
+            return null;
+        return remove(treeNode);
+
     }
 
     public static void main(String[] args) {
@@ -131,19 +173,19 @@ public class MyBinSearchTree<E extends Comparable<E>> {
 
         {
 
-            myBinSearchTree.addNode(5);
-            myBinSearchTree.addNode(6);
-            myBinSearchTree.addNode(12);
-            myBinSearchTree.addNode(11);
-            myBinSearchTree.addNode(13);
-            myBinSearchTree.addNode(20);
-            myBinSearchTree.addNode(88);
+            myBinSearchTree.add(5);
+            myBinSearchTree.add(6);
+            myBinSearchTree.add(12);
+            myBinSearchTree.add(11);
+            myBinSearchTree.add(13);
+            myBinSearchTree.add(20);
+            myBinSearchTree.add(88);
         }
 
         MyTree.mid(myBinSearchTree.root);
         System.out.println();
-        myBinSearchTree.removeNode(12);
-        MyTree.midOrder(myBinSearchTree.root);
+        myBinSearchTree.remove(12);
+        MyTree.mid(myBinSearchTree.root);
 
         System.out.println();
         System.out.println(MyBinSearchTree.isBST(myBinSearchTree.root));
