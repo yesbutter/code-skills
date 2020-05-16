@@ -4,6 +4,8 @@ package Tree;
  * AVL 树具有良好的平衡性
  * 1.平衡计算
  * 2.不平衡的旋转 4种 LL RR LR RL
+ * <p>
+ * 概念:节点后继
  *
  * @param <E>
  */
@@ -12,10 +14,9 @@ public class MyAVLTree<E extends Comparable<E>> {
     private AVLTreeNode<E> root;
     private int size;
 
-    class AVLTreeNode<E extends Comparable<E>> extends TreeNode<E> {
+    class AVLTreeNode<E extends Comparable<E>> {
         E data;
         protected AVLTreeNode<E> lChild, rChild;
-        protected AVLTreeNode<E> parent;
         protected int height;
 
         public AVLTreeNode(E data) {
@@ -23,6 +24,10 @@ public class MyAVLTree<E extends Comparable<E>> {
             this.lChild = this.rChild = null;
             this.height = 1;
         }
+    }
+
+    public int getHeight() {
+        return getHeight(root);
     }
 
     private int getHeight(AVLTreeNode<E> node) {
@@ -66,8 +71,8 @@ public class MyAVLTree<E extends Comparable<E>> {
 
 
     public void add(E data) {
-        if(root == null){
-            root =new AVLTreeNode<>(data);
+        if (root == null) {
+            root = new AVLTreeNode<>(data);
             size++;
             return;
         }
@@ -76,6 +81,7 @@ public class MyAVLTree<E extends Comparable<E>> {
 
     /**
      * 增加会修改元素的顺序
+     *
      * @param node
      * @param data
      * @return
@@ -148,77 +154,82 @@ public class MyAVLTree<E extends Comparable<E>> {
     }
 
 
-    public AVLTreeNode<E> search(E data)
-    {
-        return search(root,data);
+    public AVLTreeNode<E> search(E data) {
+        return search(root, data);
     }
 
     private AVLTreeNode<E> search(AVLTreeNode<E> node, E data) {
-        while (node != null)
-        {
-            if(data.compareTo(node.data) > 0){
+        while (node != null) {
+            if (data.compareTo(node.data) > 0) {
                 node = node.rChild;
-            }else if(data.compareTo(node.data) < 0){
+            } else if (data.compareTo(node.data) < 0) {
                 node = node.lChild;
-            }else {
+            } else {
                 return node;
             }
         }
         return null;
     }
 
-    public AVLTreeNode<E> remove(E data) {
-        AVLTreeNode<E> node = search(data);
-        if(node == null)
-            return null;
-        return remove(node);
+
+    public void remove(E data) {
+        if (data == null)
+            throw new NullPointerException();
+        root = remove(root, data);
     }
 
-    private AVLTreeNode<E> remove(AVLTreeNode<E> node) {
-        if(node.lChild != null &&node.rChild!=null){
-            //左右结点都不为空，寻找右子树的最小结点的值
-            AVLTreeNode<E> minTreeNode = node.rChild;
-            while (minTreeNode.lChild != null){
-                minTreeNode = minTreeNode.lChild;
+    //返回当前根节点
+    private AVLTreeNode<E> remove(AVLTreeNode<E> node, E data) {
+        if (node == null) {
+            return null;
+        }
+        if (data.compareTo(node.data) > 0) {
+            node.rChild = remove(node.rChild, data);
+        } else if (data.compareTo(node.data) < 0) {
+            node.lChild = remove(node.lChild, data);
+        } else {
+            size--;
+            if (node.lChild == null || node.rChild == null) {
+                return node.lChild == null ? node.rChild : node.lChild;
             }
-            E tmp = minTreeNode.data;
-            minTreeNode.data = node.data;
-            node.data = tmp;
-            node = minTreeNode;
+            E successorKey = successorOf(node).data;
+            node = remove(node, successorKey);
+            node.data = successorKey;
         }
-
-        AVLTreeNode<E> child;
-        if(node.lChild != null){
-            child = node.lChild;
-        }else {
-            child = node.rChild;
-        }
-        if(child != null){
-            //
-            node.parent = child.parent;
-        }else {
-
-        }
-
+        updateHeight(node);
+        int balanceFactor = getBalanceFactor(node);
+        if (balanceFactor > 1 || balanceFactor < -1)
+            node = balance(node);
         return node;
     }
 
-    private void remove(AVLTreeNode<E> node, E data) {
-        if(node == null)
-            return;
-        if (data.compareTo(node.data) > 0){
-            remove(node.rChild,data);
-            //balance
-        }else if(data.compareTo(node.data) < 0){
-            remove(node.lChild,data);
-            //balance
-        }else {
-            //相等 判断左子树，右子树是否非空
-            if(node.lChild == null && node.rChild ==null)
-            {
-                //直接删掉
+	//后继节点
+    private AVLTreeNode<E> successorOf(AVLTreeNode<E> node) {
+        AVLTreeNode<E> replaceTreeNode = null;
+        //左右子树都不为空，寻找左右子树高度最高的。取左子树的最大值，右子树的最小值，替换
+        if (node.rChild.height <= node.lChild.height) {
+            replaceTreeNode = node.rChild;
+            while (replaceTreeNode.lChild != null) {
+                replaceTreeNode = replaceTreeNode.lChild;
+            }
+        } else {
+            replaceTreeNode = node.lChild;
+            while (replaceTreeNode.rChild != null) {
+                replaceTreeNode = replaceTreeNode.rChild;
             }
         }
+        return replaceTreeNode;
+    }
+
+	// 删除时调整平衡
+    private AVLTreeNode<E> balance(AVLTreeNode<E> node) {
+        int balanceFactor = getBalanceFactor(node);
+        if (balanceFactor > 1 && getBalanceFactor(node.lChild) >= 0) {
+            node = leftRotate(node);
+        } else if (balanceFactor < -1 && getBalanceFactor(node.rChild) <= 0) {
+            node = rightRotate(node);
+        }
+        return node;
     }
 
     public void midOrder() {
@@ -237,18 +248,22 @@ public class MyAVLTree<E extends Comparable<E>> {
 
     public static void main(String[] args) {
         int[] array = new int[]{5, 6, 12, 11, 13, 20, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 98, 100, 101};
-        MyAVLTree<Integer> myAVLTree = new MyAVLTree<>();
+        MyAVLTree<Integer> myAVLTree = new MyAVLTree<Integer>();
         for (int data : array)
             myAVLTree.add(data);
-//        myAVLTree.midOrder();
-//        System.out.println(myAVLTree.isBalanced());
-//        System.out.println(myAVLTree.getHeight(myAVLTree.root));
 
-        System.out.println(myAVLTree.root.data);
-        MyBinSearchTree<Integer> myBinSearchTree = new MyBinSearchTree<>();
-        for (int data : array)
-            myBinSearchTree.add(data);
-        System.out.println(myBinSearchTree.getHeight());
+        myAVLTree.midOrder();
+        System.out.println();
+        myAVLTree.remove(13);
+        myAVLTree.midOrder();
+        System.out.println();
+        System.out.println(myAVLTree.getHeight());
+
+
+//        MyBinSearchTree<Integer> myBinSearchTree = new MyBinSearchTree<Integer>();
+//        for (int data : array)
+//            myBinSearchTree.add(data);
+//        System.out.println(myBinSearchTree.getHeight());
 //        System.out.println(myBinSearchTree.getRoot().data);
     }
 }
