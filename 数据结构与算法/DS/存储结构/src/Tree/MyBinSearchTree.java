@@ -6,19 +6,19 @@ package Tree;
  */
 public class MyBinSearchTree<E extends Comparable<E>> {
 
-    private TreeNode<E> root;
+    private TreeNode<E> mRoot;
     private int size = 0;
 
     public MyBinSearchTree() {
-        root = null;
+        mRoot = null;
     }
 
     public int getHeight() {
-        return getHeight(root);
+        return getHeight(mRoot);
     }
 
-    public TreeNode<E> getRoot() {
-        return root;
+    public TreeNode<E> getmRoot() {
+        return mRoot;
     }
 
     public int getHeight(TreeNode<E> node) {
@@ -30,16 +30,41 @@ public class MyBinSearchTree<E extends Comparable<E>> {
     }
 
     public MyBinSearchTree(E value) {
-        root = new TreeNode<>(value);
+        mRoot = new TreeNode<>(value);
     }
 
     public void add(E data) {
-        if (root == null) {
-            root = new TreeNode<>(data);
+        if (mRoot == null) {
+            mRoot = new TreeNode<>(data);
             size++;
             return;
         }
-        add(root, data);
+        add(mRoot, data);
+    }
+
+
+    public void add(TreeNode<E> node, E data) {
+        TreeNode<E> treeNode = node;
+        TreeNode<E> position = null;
+        while (treeNode != null) {
+            position = treeNode;
+            if (data.compareTo(treeNode.data) > 0) {
+                treeNode = treeNode.rChild;
+            } else {
+                treeNode = treeNode.lChild;
+            }
+        }
+        TreeNode<E> newNode = new TreeNode<>(data);
+        newNode.parent = position;
+        if (position == null)
+            mRoot = newNode;
+        else {
+            if (data.compareTo(position.data) > 0) {
+                position.rChild = newNode;
+            } else {
+                position.lChild = newNode;
+            }
+        }
     }
 
     public static <E extends Comparable<E>> boolean isBST(TreeNode<E> root) {
@@ -56,7 +81,7 @@ public class MyBinSearchTree<E extends Comparable<E>> {
 
 
     public TreeNode<E> search(E data) {
-        return search(root, data);
+        return search(mRoot, data);
     }
 
     private TreeNode<E> search(TreeNode<E> node, E data) {
@@ -92,49 +117,12 @@ public class MyBinSearchTree<E extends Comparable<E>> {
         add(next, data);
     }
 
-    public void add(TreeNode<E> node, E data) {
-        TreeNode<E> treeNode = node;
-        TreeNode<E> position = null;
-        while (treeNode != null) {
-            position = treeNode;
-            if (data.compareTo(treeNode.data) > 0) {
-                treeNode = treeNode.rChild;
-            } else {
-                treeNode = treeNode.lChild;
-            }
-        }
-        TreeNode<E> newNode =new TreeNode<>(data);
-        newNode.parent = position;
-        if(position == null)
-            root = newNode;
-        else {
-            if(data.compareTo(position.data) > 0){
-                position.rChild = newNode;
-            }else {
-                position.lChild = newNode;
-            }
-        }
-    }
-
-    public void updateNodeValue(TreeNode<E> node, TreeNode<E> value) {
-        if (node.parent.lChild != null && node.parent.lChild == node)
-            node.parent.lChild = value;
-        else
-            node.parent.rChild = value;
-    }
-
 
     public TreeNode<E> remove(TreeNode<E> node) {
-
         if (node.lChild != null && node.rChild != null) {
             //左右节点都在，找右子树中最小的元素交换值。
-            TreeNode<E> minTreeNode = node.rChild;
-            while (minTreeNode.lChild != null) {
-                minTreeNode = minTreeNode.lChild;
-            }
-            E tmp = minTreeNode.data;
+            TreeNode<E> minTreeNode = successor(node);
             minTreeNode.data = node.data;
-            node.data = tmp;
             node = minTreeNode;
         }
 
@@ -149,7 +137,7 @@ public class MyBinSearchTree<E extends Comparable<E>> {
         }
         //如果当前节点没有父节点，表示是跟结点
         if (node.parent == null) {
-            root = child;
+            mRoot = child;
         } else if (node == node.parent.lChild) {
             //当前结点是父节点的左结点
             node.parent.lChild = child;
@@ -157,6 +145,23 @@ public class MyBinSearchTree<E extends Comparable<E>> {
             node.parent.rChild = child;
         }
         return node;
+    }
+
+
+    public static <E> TreeNode<E> successor(TreeNode<E> node) {
+        if (node == null || (node.lChild == null && node.rChild == null))
+            return null;
+        TreeNode<E> value;
+        if (node.rChild != null) {
+            value = node.rChild;
+            while (value.lChild != null)
+                value = value.lChild;
+        } else {
+            value = node.lChild;
+            while (value.rChild != null)
+                value = value.rChild;
+        }
+        return value;
     }
 
     public TreeNode<E> remove(E data) {
@@ -182,12 +187,12 @@ public class MyBinSearchTree<E extends Comparable<E>> {
             myBinSearchTree.add(88);
         }
 
-        MyTree.mid(myBinSearchTree.root);
+        MyTree.mid(myBinSearchTree.mRoot);
         System.out.println();
         myBinSearchTree.remove(12);
-        MyTree.mid(myBinSearchTree.root);
+        MyTree.mid(myBinSearchTree.mRoot);
 
         System.out.println();
-        System.out.println(MyBinSearchTree.isBST(myBinSearchTree.root));
+        System.out.println(MyBinSearchTree.isBST(myBinSearchTree.mRoot));
     }
 }

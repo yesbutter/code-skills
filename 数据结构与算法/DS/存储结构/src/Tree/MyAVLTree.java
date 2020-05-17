@@ -11,10 +11,10 @@ package Tree;
  */
 public class MyAVLTree<E extends Comparable<E>> {
 
-    private AVLTreeNode<E> root;
+    private AVLTreeNode<E> mRoot;
     private int size;
 
-    class AVLTreeNode<E extends Comparable<E>> {
+    static class AVLTreeNode<E extends Comparable<E>> {
         E data;
         protected AVLTreeNode<E> lChild, rChild;
         protected int height;
@@ -27,17 +27,23 @@ public class MyAVLTree<E extends Comparable<E>> {
     }
 
     public int getHeight() {
-        return getHeight(root);
+        return getHeight(mRoot);
     }
 
-    private int getHeight(AVLTreeNode<E> node) {
+    private static <E extends Comparable<E>> int getBalanceFactor(AVLTreeNode<E> node) {
+        if (node == null)
+            return 0;
+        return getHeight(node.lChild) - getHeight(node.rChild);
+    }
+
+    private static <E extends Comparable<E>> int getHeight(AVLTreeNode<E> node) {
         if (node == null)
             return 0;
         return node.height;
     }
 
     public MyAVLTree() {
-        this.root = null;
+        this.mRoot = null;
         size = 0;
     }
 
@@ -50,14 +56,10 @@ public class MyAVLTree<E extends Comparable<E>> {
         return size == 0;
     }
 
-    private int getBalanceFactor(AVLTreeNode<E> node) {
-        if (node == null)
-            return 0;
-        return getHeight(node.lChild) - getHeight(node.rChild);
-    }
+
 
     public boolean isBalanced() {
-        return isBalanced(root);
+        return isBalanced(mRoot);
     }
 
     private boolean isBalanced(AVLTreeNode<E> node) {
@@ -70,13 +72,13 @@ public class MyAVLTree<E extends Comparable<E>> {
     }
 
 
-    public void add(E data) {
-        if (root == null) {
-            root = new AVLTreeNode<>(data);
+    public void insert(E data) {
+        if (mRoot == null) {
+            mRoot = new AVLTreeNode<>(data);
             size++;
             return;
         }
-        root = add(root, data);
+        mRoot = insert(mRoot, data);
     }
 
     /**
@@ -86,15 +88,15 @@ public class MyAVLTree<E extends Comparable<E>> {
      * @param data
      * @return
      */
-    private AVLTreeNode<E> add(AVLTreeNode<E> node, E data) {
+    private AVLTreeNode<E> insert(AVLTreeNode<E> node, E data) {
         if (node == null) {
             size++;
             return new AVLTreeNode<>(data);
         }
         if (data.compareTo(node.data) < 0) {
-            node.lChild = add(node.lChild, data);
+            node.lChild = insert(node.lChild, data);
         } else if (data.compareTo(node.data) > 0) {
-            node.rChild = add(node.rChild, data);
+            node.rChild = insert(node.rChild, data);
         }
         updateHeight(node);
         int balanceFactor = getBalanceFactor(node);
@@ -155,8 +157,9 @@ public class MyAVLTree<E extends Comparable<E>> {
 
 
     public AVLTreeNode<E> search(E data) {
-        return search(root, data);
+        return search(mRoot, data);
     }
+
 
     private AVLTreeNode<E> search(AVLTreeNode<E> node, E data) {
         while (node != null) {
@@ -175,7 +178,7 @@ public class MyAVLTree<E extends Comparable<E>> {
     public void remove(E data) {
         if (data == null)
             throw new NullPointerException();
-        root = remove(root, data);
+        mRoot = remove(mRoot, data);
     }
 
     //返回当前根节点
@@ -192,7 +195,7 @@ public class MyAVLTree<E extends Comparable<E>> {
             if (node.lChild == null || node.rChild == null) {
                 return node.lChild == null ? node.rChild : node.lChild;
             }
-            E successorKey = successorOf(node).data;
+            E successorKey = successor(node).data;
             node = remove(node, successorKey);
             node.data = successorKey;
         }
@@ -204,7 +207,7 @@ public class MyAVLTree<E extends Comparable<E>> {
     }
 
 	//后继节点
-    private AVLTreeNode<E> successorOf(AVLTreeNode<E> node) {
+    private AVLTreeNode<E> successor(AVLTreeNode<E> node) {
         AVLTreeNode<E> replaceTreeNode = null;
         //左右子树都不为空，寻找左右子树高度最高的。取左子树的最大值，右子树的最小值，替换
         if (node.rChild.height <= node.lChild.height) {
@@ -233,7 +236,7 @@ public class MyAVLTree<E extends Comparable<E>> {
     }
 
     public void midOrder() {
-        midOrder(root);
+        midOrder(mRoot);
     }
 
     //递归先序
@@ -250,7 +253,7 @@ public class MyAVLTree<E extends Comparable<E>> {
         int[] array = new int[]{5, 6, 12, 11, 13, 20, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 98, 100, 101};
         MyAVLTree<Integer> myAVLTree = new MyAVLTree<Integer>();
         for (int data : array)
-            myAVLTree.add(data);
+            myAVLTree.insert(data);
 
         myAVLTree.midOrder();
         System.out.println();
