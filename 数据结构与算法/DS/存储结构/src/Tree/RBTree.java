@@ -31,6 +31,7 @@ public class RBTree<E extends Comparable<E>> {
         E data;
         RBTreeNode<E> lChild, rChild, parent;
 
+        //为什么需要parent指针，应该是为了访问父亲的父亲结点。
         public RBTreeNode(E data) {
             this.data = data;
             this.color = RED;

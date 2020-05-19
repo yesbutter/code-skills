@@ -13,7 +13,7 @@ import java.util.Queue;
  */
 public class SplayTree<E extends Comparable<E>> {
 
-//    PriorityQueue
+    //    PriorityQueue
     private TreeNode<E> mRoot;
     private int size = 0;
 
@@ -72,29 +72,12 @@ public class SplayTree<E extends Comparable<E>> {
     private void upNode2Root(TreeNode<E> node) {
         TreeNode<E> grandFather;
         while (node.parent != null) {
-            if((grandFather = node.parent.parent) != null){
-                if(grandFather.lChild == node.parent && node.parent.lChild == node){
-                    //LL
-                    rightRotate(node.parent);
-                    rightRotate(node.parent);
-                }else if(grandFather.rChild == node.parent && node.parent.rChild == node){
-                    rightRotate(node.parent);
-                    rightRotate(node.parent);
-                }else if(grandFather.lChild == node.parent && node.parent.rChild == node){
-                    leftRotate(node.parent);
-                    rightRotate(node.parent);
-                }else {
-                    rightRotate(node.parent);
-                    leftRotate(node.parent);
-                }
-            }else {
-                if (node.parent.lChild == node) {
-                    //当前结点是左孩子,右旋父结点
-                    rightRotate(node.parent);
-                } else {
-                    //当前结点是右孩子，左旋父结点
-                    leftRotate(node.parent);
-                }
+            if (node.parent.lChild == node) {
+                //当前结点是左孩子,右旋父结点
+                rightRotate(node.parent);
+            } else {
+                //当前结点是右孩子，左旋父结点
+                leftRotate(node.parent);
             }
         }
     }
@@ -133,6 +116,7 @@ public class SplayTree<E extends Comparable<E>> {
         upNode2Root(node);
         //找后继结点
         remove(node);
+        --size;
     }
 
     /**
@@ -167,9 +151,9 @@ public class SplayTree<E extends Comparable<E>> {
             mRoot = null;
         } else {
             //删除结点没有子节点,而且存在夫结点
-            if(node.parent.lChild == node){
+            if (node.parent.lChild == node) {
                 node.parent.lChild = null;
-            }else {
+            } else {
                 node.parent.rChild = null;
             }
             node.parent = null;
@@ -205,10 +189,10 @@ public class SplayTree<E extends Comparable<E>> {
     }
 
     private void mid(TreeNode<E> node) {
-        if(node == null)
+        if (node == null)
             return;
         mid(node.lChild);
-        System.out.print(node.data+" ");
+        System.out.print(node.data + " ");
         mid(node.rChild);
     }
 
