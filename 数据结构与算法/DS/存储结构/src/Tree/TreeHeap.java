@@ -40,17 +40,17 @@ public class TreeHeap<E extends Comparable<E>> {
         public String toString() {
             return "data:" + data +
                     " priority:" + priority +
-                    " lChild" + (lChild == null ? "" : lChild.data) +
-                    " rChild" + (rChild == null ? "" : rChild.data);
+                    " lChild " + (lChild == null ? "" : lChild.data) +
+                    " rChild " + (rChild == null ? "" : rChild.data);
         }
     }
 
     public void insert(E data) {
         //首先找插入位置，其次通过旋转满足堆的性质
-        insert(mRoot, data);
+        mRoot = insert(mRoot, data);
     }
 
-    //插入支持相同的元素,应该是递归的会好点，返回根元素
+    //插入支持相同的元素,插入时会插入都叶子结点，返回根元素
     private TreeHeapNode<E> insert(TreeHeapNode<E> node, E data) {
         if (node == null) {
             size++;
@@ -64,7 +64,7 @@ public class TreeHeap<E extends Comparable<E>> {
         //reBalance,插入之后判断父节点的和当前结点的关系。
         if (node.lChild != null && node.priority > node.lChild.priority) {
             return rightRotate(node);
-        } else if (node.rChild != null && node.priority < node.rChild.priority) {
+        } else if (node.rChild != null && node.priority > node.rChild.priority) {
             return leftRotate(node);
         }
         return node;
@@ -94,6 +94,12 @@ public class TreeHeap<E extends Comparable<E>> {
         return y;
     }
 
+
+    public void levelTraversal() {
+        levelTraversal(mRoot);
+    }
+
+
     private void levelTraversal(TreeHeapNode<E> node) {
         TreeHeapNode<E> nlast = node;
         TreeHeapNode<E> last = node;
@@ -102,7 +108,7 @@ public class TreeHeap<E extends Comparable<E>> {
         TreeHeapNode<E> tmp;
         while (!queue.isEmpty()) {
             tmp = queue.poll();
-            System.out.print(tmp.data + "           ");
+            System.out.print(tmp + "           ");
             if (tmp.lChild != null) {
                 queue.add(tmp.lChild);
                 nlast = tmp.lChild;
@@ -138,18 +144,82 @@ public class TreeHeap<E extends Comparable<E>> {
     }
 
 
-    //TODO 继续完善删除逻辑
+    //首先判断是否存在，然后从存在的结点进行向下平衡到根结点
     public void remove(E e) {
-        TreeHeapNode<E> node = search(e);
-        if (node != null) {
-//            remove(node);
+        int cmp = -1;
+        TreeHeapNode<E> father = null;
+        TreeHeapNode<E> find = null;
+        TreeHeapNode<E> node = mRoot;
+        while (node != null) {
+            cmp = e.compareTo(node.data);
+            if (cmp < 0) {
+                father = node;
+                node = node.lChild;
+            } else if (cmp > 0) {
+                father = node;
+                node = node.rChild;
+            } else {
+                find = node;
+                break;
+            }
+        }
+        if (find != null) {
+            remove(node, father);
         }
     }
 
-    private void remove(TreeHeapNode<E> mRoot, E e) {
+    /**
+     * @param node
+     */
+    private void remove(TreeHeapNode<E> node, TreeHeapNode<E> father) {
+        //保证待删除结点
+        while (node.lChild != null && node.rChild != null) {
+            if (node.lChild.priority > node.rChild.priority) {
+                father = leftRotate(node);
+                node = father.lChild;
+            } else {
+                father = rightRotate(node);
+                node = father.rChild;
+            }
+        }
+        //删除的是根结点
+        TreeHeapNode<E> replace;
+        if (node.lChild != null) {
+            replace = node.lChild;
+        } else {
+            replace = node.rChild;
+        }
+        if (father == null) {
+            mRoot = null;
+        } else if (father.lChild == node) {
+            father.lChild = replace;
+        } else {
+            father.rChild = replace;
+        }
     }
 
     public static void main(String[] args) {
-        TreeHeap treeHeap = new TreeHeap();
+        TreeHeap<Integer> treeHeap = new TreeHeap<>();
+
+        treeHeap.insert(10);
+        treeHeap.insert(8);
+        treeHeap.insert(55);
+        treeHeap.insert(33);
+        treeHeap.insert(20);
+        treeHeap.insert(15);
+        treeHeap.insert(16);
+        treeHeap.insert(17);
+
+        treeHeap.insert(30);
+        treeHeap.insert(80);
+
+        treeHeap.levelTraversal();
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        treeHeap.remove(16);
+        treeHeap.levelTraversal();
+
     }
 }
