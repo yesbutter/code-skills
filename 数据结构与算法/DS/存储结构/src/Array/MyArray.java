@@ -8,9 +8,9 @@ import java.util.Arrays;
  */
 public class MyArray<T> {
 
-    private static final int DEFAULT_SIZE = 10;
-    private Object[] data;
-    private int position;
+    protected static final int DEFAULT_SIZE = 10;
+    protected Object[] data;
+    protected int position;
 
     public MyArray() {
         data = new Object[DEFAULT_SIZE];
